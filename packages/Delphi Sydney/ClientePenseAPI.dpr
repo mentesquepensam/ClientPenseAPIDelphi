@@ -4,8 +4,6 @@ uses
   Vcl.Forms,
   Spring.Container,
   CodeSiteLogging,
-  Eagle.Core.Http.Impl.RestClient,
-  Eagle.Core.Http.Impl.HttpResponse,
   Eagle.Core.View.Impl.Notification,
   Eagle.ClientePenseAPI.Main in '..\..\src\main\Eagle.ClientePenseAPI.Main.pas' {Main},
   Eagle.ClientePenseAPI.Service.Impl.ClientePense in '..\..\src\service\impl\Eagle.ClientePenseAPI.Service.Impl.ClientePense.pas',
@@ -19,7 +17,11 @@ uses
   Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento in '..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento.pas',
   Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento.pas',
   Eagle.ClientePenseAPI.Model.Resposta.DadosErro in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosErro.pas',
-  Eagle.ClientePenseAPI.Util.GeradorLog in '..\..\src\utils\Eagle.ClientePenseAPI.Util.GeradorLog.pas';
+  Eagle.ClientePenseAPI.Util.GeradorLog in '..\..\src\utils\Eagle.ClientePenseAPI.Util.GeradorLog.pas',
+  Eagle.Core.Http.HttpResponse in '..\..\src\http\Eagle.Core.Http.HttpResponse.pas',
+  Eagle.Core.Http.RestClient in '..\..\src\http\Eagle.Core.Http.RestClient.pas',
+  Eagle.Core.Http.Impl.HttpResponse in '..\..\src\http\impl\Eagle.Core.Http.Impl.HttpResponse.pas',
+  Eagle.Core.Http.Impl.RestClient in '..\..\src\http\impl\Eagle.Core.Http.Impl.RestClient.pas';
 
 {$R *.res}
 

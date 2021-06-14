@@ -113,6 +113,10 @@
         <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento.pas"/>
         <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosErro.pas"/>
         <DCCReference Include="..\..\src\utils\Eagle.ClientePenseAPI.Util.GeradorLog.pas"/>
+        <DCCReference Include="..\..\src\http\Eagle.Core.Http.HttpResponse.pas"/>
+        <DCCReference Include="..\..\src\http\Eagle.Core.Http.RestClient.pas"/>
+        <DCCReference Include="..\..\src\http\impl\Eagle.Core.Http.Impl.HttpResponse.pas"/>
+        <DCCReference Include="..\..\src\http\impl\Eagle.Core.Http.Impl.RestClient.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
