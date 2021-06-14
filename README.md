@@ -25,6 +25,7 @@ Em utils temos apenas a classe utilitária GeradorLog, e possui apenas o método
 **Service**
 É aqui que está a classe responsável por conectar na API e consumir os seus EndPoints.
 A classe ClientePense utiliza a classe RestClient para se conectar com a API.
+
 **RestClient**
 A classe RestClient encapsula o componente nativo do Delphi TIdHttp, responsável por realizar as comunicações utilizando o protocolo HTTP.
 Em sua criação a classe RestClient recebe o BaseURL que é a URL da API, no nosso caso por enquanto é: http://54.207.251.35:5000.
@@ -44,6 +45,7 @@ E no caso do TJson. Parse é bem semelhante, você define entre <> para qual tip
 Em seu Create ela recebe a BaseURL da API que será consumida, no nosso caso atualmente é http://54.207.251.35:5000.
   
 Temos os seguintes métodos públicos: 
+  
 **RealizarAutenticacaoCliente**: Esse método irá autenticar o cliente para que o mesmo possa consumir os demais EndPoints da API. 
 Este método recebe os dados DadosAutenticacao, realiza a conversão do objeto para JSON através do método TJson.Stringify, e este objeto JSON é enviado no corpo da requisição. Com isso é realizada uma requisição do tipo POST no EndPoint '/api/Auth' enviando os dados necessários no corpo da requisição.
 Caso o código de retorno da requisição seja diferente de 200 (retorno de sucesso) o método entra no tratamento de erros passando a mensagem de erro retornada e o código retornado. 
@@ -63,7 +65,7 @@ Ele recebe os dados do pagamento, é realizada a conversão para JSON através d
 Após esse tratamento é realizado um POST na rota '/api/Payment' enviando no corpo da requisição os dados do pagamento em uma string JSON.
 Caso o código de retorno da requisição seja diferente 201 (Retorno padrão adotado pela API quando o pagamento é criado com sucesso) é realizado o tratamento dos erros. Caso o pagamento tenha sido enviado com sucesso, é feita a conversão do corpo da resposta para o tipo TDadosRespostaPagamento para que os dados sejam exibidos para o usuário.
   
-ConsultarPagamentoPeloCodigoAPI e ConsultarPagamentoPeloCodigoERP: Esses dois métodos também são semelhantes, eles consulta a API através de Get passando o ID do pagamento que a API gerou no caso do método ConsultarPagamentoPeloCodigoAPI ou o código do pagamento que foi definido pelo usuário no momento de enviar o pagamento através do método ConsultarPagamentoPeloCodigoERP.
+**ConsultarPagamentoPeloCodigoAPI** e **ConsultarPagamentoPeloCodigoERP**: Esses dois métodos também são semelhantes, eles consulta a API através de Get passando o ID do pagamento que a API gerou no caso do método ConsultarPagamentoPeloCodigoAPI ou o código do pagamento que foi definido pelo usuário no momento de enviar o pagamento através do método ConsultarPagamentoPeloCodigoERP.
 Em ambos os casos eles recebem o código que será utilizado na consulta, o código é adicionado a rota '/api/Payment/%d' (ConsultarPagamentoPeloCodigoAPI) ou '/api/Payment/ByExternalReference/%s' (ConsultarPagamentoPeloCodigoERP). Com isso é feito um GET na API passando o código na rota, caso o retorno da consulta seja diferente de 200 é realizado o tratamento dos erros. Caso o pagamento tenha sido consultado com sucesso, o método irá converter o corpo da resposta da requisição para o objeto TDadosRespostaPagamento e assim o pagamento consultado pode ser exibido para o usuário.
   
 **DeletarPagamento**: Método responsável por deletar/estornar/cancelar um pagamento criado.
@@ -71,7 +73,9 @@ Este método é bem simples, ele recebe o código do pagamento que será deletad
 ListarCarteiras: Método bem simples, que realiza apenas um GET no EndPoint '/api/Wallet' que por sua vez retorna em uma string as carteiras disponíveis para o cliente.
 
 Métodos privados:
+  
 **ConverterItensPagamentoVazioParaNull**: Método responsável por converter itens vazios ("items":[]) para null ("items":null), conforme o comportamento descrito anteriormente.
+  
 **MontarHeadersDaRequisicao**:  Para consumir todos EndPoints da API com exceção do EndPoint de autenticação ('/api/Auth') é necessário enviar no Header da requisição um Bearer Token, portanto esse método irá montar no Header da requisição uma sessão authorization com o Bearer Token.
 O token é retornado pelo método RealizarAutenticacaoCliente e neste método o Header da requisição já é configurado quando a autenticação é realizada com sucesso. O token tem validade de 10 minutos e após isso ele deve ser renovado, caso contrário as repostas das requisições serão o erro 401.
   
