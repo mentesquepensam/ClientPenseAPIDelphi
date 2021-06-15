@@ -296,6 +296,12 @@ procedure TMain.BTAtualizarStatusRespostaPagamentoClick(Sender: TObject);
 var
   DadosRetornoPagamento: TDadosRespostaPagamento;
 begin
+  if string(MECodigoPagamentoAPIRespostaPagamento.Text).IsEmpty then
+  begin
+    FNotification.BalloonWarning(MECodigoPagamentoAPIRespostaPagamento, MSG_CAMPO_OBRIGATORIO);
+    Abort;
+  end;
+
   DadosRetornoPagamento := FClientePense.ConsultarPagamentoPeloCodigoAPI(string(MECodigoPagamentoAPIRespostaPagamento.Text).ToInteger);
   Self.AtualizarDadosRetornoPagamento(DadosRetornoPagamento);
 end;
@@ -513,7 +519,7 @@ end;
 
 procedure TMain.DeletarPagamento;
 begin
-  if string(MECodigoPagamentoAPIConsultaPagamentos.Text).ToInteger <= 0 then
+  if string(MECodigoPagamentoAPIConsultaPagamentos.Text).IsEmpty then
   begin
     FNotification.BalloonWarning(MECodigoPagamentoAPIConsultaPagamentos, MSG_CAMPO_OBRIGATORIO);
     Abort;
@@ -616,7 +622,7 @@ begin
   if string(MEIdentificadorLoja.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEIdentificadorLoja);
 
-  if string(MENumeroLoja.Text).ToInteger <= 0 then
+  if string(MENumeroLoja.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MENumeroLoja);
 
   if string(MELogradouroLoja.Text).IsEmpty then
