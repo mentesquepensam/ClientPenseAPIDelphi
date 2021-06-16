@@ -4,7 +4,7 @@ Esse pequeno projeto foi escrito em Delphi, utilizando a versão 10.4.1, o mesmo
 
 Caso queira configurar o spring4d em sua maquina o mesmo pode ser encontrado em: https://bitbucket.org/sglienke/spring4d/src/master/.
 
-A documentação da API pode ser consultada em: http://54.207.251.35:5000/swagger/index.html
+A documentação da API pode ser consultada em: https://payment.mentesquepensam.com.br/swagger/index.html
 
 O projeto é dividido da seguinte forma:
 **Main**: Unit que contém a parte gráfica, validações, construção dos objetos que são enviados para a classe ClientePense e tratamentos para exibir o resultado para o usuário.
