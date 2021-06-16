@@ -585,8 +585,12 @@ begin
   if string(MECodigoTerminalPagamento.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MECodigoTerminalPagamento);
 
-  if string(MEValorPagamento.Text).ToDouble <= 0 then
+  if string(MEValorPagamento.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEValorPagamento);
+
+  if not(string(MEValorPagamento.Text).IsEmpty) then
+    if string(MEValorPagamento.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEValorPagamento);
 
   if Assigned(FItensPagamento) then
     if string(METotalItensPagamento.Text).ToDouble <> string(MEValorPagamento.Text).ToDouble then
@@ -604,11 +608,19 @@ begin
   if string(MEDescricaoItemPagamento.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEDescricaoItemPagamento);
 
-  if string(MEValorItemPagamento.Text).ToDouble <= 0 then
+  if string(MEValorItemPagamento.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEValorItemPagamento);
 
-  if string(MEQuantidadeItemPagamento.Text).ToDouble <= 0 then
+  if not(string(MEValorItemPagamento.Text).IsEmpty) then
+    if string(MEValorItemPagamento.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEValorItemPagamento);
+
+  if string(MEQuantidadeItemPagamento.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEQuantidadeItemPagamento);
+
+  if not(string(MEQuantidadeItemPagamento.Text).IsEmpty) then
+    if string(MEQuantidadeItemPagamento.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEQuantidadeItemPagamento);
 
   if FNotification.WhenHasNotificationShowAndClear then
     Abort;
@@ -637,11 +649,19 @@ begin
   if string(MENomeEstadoLoja.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MENomeEstadoLoja);
 
-  if string(MELatitude.Text).ToDouble = 0 then
+  if string(MELatitude.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MELatitude);
 
-  if string(MELongitude.Text).ToDouble = 0 then
+  if not(string(MELatitude.Text).IsEmpty) then
+    if string(MELatitude.Text).ToDouble = 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MELatitude);
+
+  if string(MELongitude.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MELongitude);
+
+  if not(string(MELongitude.Text).IsEmpty) then
+    if string(MELongitude.Text).ToDouble = 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MELongitude);
 
   if FNotification.WhenHasNotificationShowAndClear then
     Abort;
