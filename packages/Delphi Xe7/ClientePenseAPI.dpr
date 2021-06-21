@@ -9,7 +9,6 @@ uses
   //
   XSuperJSON in '..\..\dependencias\x-superobject\XSuperJSON.pas',
   XSuperObject in '..\..\dependencias\x-superobject\XSuperObject.pas',
-
   Mqp.View.Impl.Notification in '..\..\src\view\impl\Mqp.View.Impl.Notification.pas',
   Mqp.View.Notification in '..\..\src\view\Mqp.View.Notification.pas',
   Eagle.ClientePenseAPI.Main in '..\..\src\main\Eagle.ClientePenseAPI.Main.pas' {Main},

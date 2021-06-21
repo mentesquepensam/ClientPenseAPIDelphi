@@ -268,10 +268,28 @@ const
 var
   Mensagem: string;
   DadosRespostaErro: TDadosRespostaErro;
+  //
+  //testa se e´ a versao do delphi Xe7
+  {$IFDEF VER280}
+  function StartsText(const ASubText, AText: string): Boolean;
+  const Empty = '';
+  begin
+     if ASubText = Empty then
+        Result := True
+     else
+     begin
+       if (AText.Length >= ASubText.Length) then
+          Result := AnsiStrLIComp(PChar(ASubText), PChar(AText), ASubText.Length) = 0
+       else
+          Result := False;
+     end;
+  end;
+  {$ENDIF}
+
 begin
   TGeradorLog.AdicionarLog('Resposta: Codigo: ' + CodigoErro.ToString + ' Corpo: ' + ErroMensage);
 
-  if CodigoErro.ToString.StartsText(INICIO_CODIGOS_DE_SUCESSO, CodigoErro.ToString) then
+  if {$IFNDEF VER280}CodigoErro.ToString.{$ENDIF}StartsText(INICIO_CODIGOS_DE_SUCESSO, CodigoErro.ToString) then
     Exit;
 
   DadosRespostaErro := TJson.Parse<TDadosRespostaErro>(ErroMensage);

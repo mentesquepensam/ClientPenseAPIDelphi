@@ -82,3 +82,16 @@ O token é retornado pelo método RealizarAutenticacaoCliente e neste método o 
 **TratarError**: Método responsável para tratar os retornos da API que não estão dentro do padrão aceito. Portanto, caso alguma resposta de algum EndPoint não esteja dentro do padrão estabelecido, esse método é acionado para que seja exibido o retorno para o usuário no formato de um erro. 
 Caso a API tenha retornado um erro dentro do padrão de erros definido, é feita a conversão do corpo da requisição para o objeto DadosRespostaErro, e as mensagens contidas neste objeto são exibidas para o usuário, caso contrário, uma mensagem genérica informando o código de erro e o provável motivo do erro é exibida para o usuário.
 Há também a propriedade BearerToken que apenas retorna o BearerToken configurado no Header da requisição no momento.
+DEPENDÊCIAS:
+O projeto ClientePenseAPI  tem as seguintes dependência :
+•	CodeSite
+Para instalar va no Delphi em > Tools> Getlt Package Manager > procure : CodeSite
+Clique o botão direiro do Mouse em : CodeSite Express e e depois no botão Install
+•	Spring4D 
+para baixar o mesmo:
+https://bitbucket.org/sglienke/spring4d/src/master/
+Assista o vídeo para entender o que é os Spring for Delphi....
+https://www.youtube.com/watch?v=_UuMrVCJ264
+•	X-SuperObject
+para baixar o mesmo:
+https://github.com/onryldz/x-superobject

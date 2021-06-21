@@ -11,7 +11,9 @@ uses
   Spring.Container,
   Spring.Collections,
 
-  Eagle.Core.View.Notification,
+  //Eagle.Core.View.Notification,
+
+  Mqp.View.Notification,
 
   Eagle.ClientePenseAPI.Model.HorarioFuncionamentoLoja,
   Eagle.ClientePenseAPI.Model.EnderecoLoja,
