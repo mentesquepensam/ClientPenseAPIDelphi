@@ -1,8 +1,10 @@
 Abaixo está documentado o código do protótipo Cliente Pense API, a documentação irá focar principalmente na classe de serviço ClientePense que é a classe responsável por realizar o consumo dos EndPoints da MQP API.
 
-Esse pequeno projeto foi escrito em Delphi, utilizando a versão 10.4.1, o mesmo utiliza o Spring4D para construir os objetos e também utiliza algumas recursos contidos no spring, caso não possua o Spring configurado em sua máquina, basta remover as referências do mesmo do projeto.
+Esse pequeno projeto foi escrito em Delphi, utilizando a versão 10.4.1, o mesmo utiliza o Spring4D para construir os objetos e também utiliza algumas recursos contidos no spring, caso não possua o Spring configurado em sua máquina, basta remover as referências do mesmo do projeto, e aplicar as alterações necessarias nos metodos que utilizam objetos do spring.
 
-A documentação da API pode ser consultada em: http://54.207.251.35:5000/swagger/index.html
+Caso queira configurar o spring4d em sua maquina o mesmo pode ser encontrado em: https://bitbucket.org/sglienke/spring4d/src/master/.
+
+A documentação da API pode ser consultada em: https://payment.mentesquepensam.com.br/swagger/index.html
 
 O projeto é dividido da seguinte forma:
 **Main**: Unit que contém a parte gráfica, validações, construção dos objetos que são enviados para a classe ClientePense e tratamentos para exibir o resultado para o usuário.
