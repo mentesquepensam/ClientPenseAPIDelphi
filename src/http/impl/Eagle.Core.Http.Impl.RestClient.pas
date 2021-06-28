@@ -44,7 +44,14 @@ begin
 
   Ssl := TIdSSLIOHandlerSocketOpenSSL.Create(FHttpClient);
 
+  //
+  //testa se e´ a versao do delphi Xe7
+  //
+  {$IFDEF VER280}
+  Ssl.SSLOptions.Method := sslvSSLv23;
+  {$ELSE}
   Ssl.SSLOptions.SSLVersions := [SslvTLSv1, SslvTLSv1_1, SslvTLSv1_2];
+  {$ENDIF}
 
   FHttpClient.IOHandler := Ssl;
   FHttpClient.HandleRedirects := True;
