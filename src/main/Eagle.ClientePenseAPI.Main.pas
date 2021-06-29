@@ -133,7 +133,11 @@ type
     METotalItensPagamento: TSpinEdit;
     MEValorPagamento: TSpinEdit;
     MEDescricaoItemPagamento: TEdit;
-
+    GbQrCode: TGroupBox;
+    WebBrowserQrCode: TWebBrowser;
+    PnlQrCode: TPanel;
+    BtExibeQrCode: TBitBtn;
+    BtLimpaQrcodeTela: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure BTAutenticarClienteConfiguracaoClick(Sender: TObject);
     procedure BTEnviarLojaClick(Sender: TObject);
@@ -148,6 +152,10 @@ type
     procedure BTAbrirQRCodeConsultaPagamentosNavegadorClick(Sender: TObject);
     procedure BTAbrirQRCodeRespostaPagamentosNavegadorClick(Sender: TObject);
     procedure BTDeletarPagamentoClick(Sender: TObject);
+    procedure WebBrowserQrCodeDocumentComplete(ASender: TObject;
+      const pDisp: IDispatch; const URL: OleVariant);
+    procedure BtExibeQrCodeClick(Sender: TObject);
+    procedure BtLimpaQrcodeTelaClick(Sender: TObject);
 
   private
     FClientePense: IClientePense;
@@ -179,6 +187,8 @@ type
     procedure ValidarItensPagamento;
     procedure ValidarLoja;
     procedure ValidarTerminal;
+
+    procedure ExibeQrCode(const UrlQrCode : String);
   public
     { Public declarations }
   end;
@@ -217,6 +227,7 @@ begin
   Self.ValidarTerminal;
   Self.EnviarTerminal;
 end;
+
 
 procedure TMain.BTListarCarteirasClick(Sender: TObject);
 begin
@@ -292,6 +303,12 @@ begin
   DadosRetornoPagamento := FClientePense.ConsultarPagamentoPelaCodigoERP(string(MECodigoPagamentoERPConsultaPagamentos.Text));
 
   Self.AtualizarDadosConsultaPagamento(DadosRetornoPagamento);
+end;
+
+procedure TMain.BtLimpaQrcodeTelaClick(Sender: TObject);
+begin
+   PnlQrCode.Visible := False;
+   WebBrowserQrCode.Visible := False;
 end;
 
 procedure TMain.BTAtualizarStatusRespostaPagamentoClick(Sender: TObject);
@@ -683,5 +700,62 @@ begin
   if FNotification.WhenHasNotificationShowAndClear then
     Abort;
 end;
+
+procedure TMain.BtExibeQrCodeClick(Sender: TObject);
+begin
+  if string(MEQRCodeConsultaPagamentos.Text).IsEmpty then
+  begin
+    FNotification.BalloonWarning(MEQRCodeConsultaPagamentos, MSG_CAMPO_OBRIGATORIO);
+    Abort;
+  end;
+  ExibeQrCode(MEQRCodeConsultaPagamentos.Text);
+end;
+
+procedure TMain.WebBrowserQrCodeDocumentComplete(ASender: TObject;
+  const pDisp: IDispatch; const URL: OleVariant);
+begin
+  WebBrowserQrCode.OleObject.document.body.style.overflowX := 'hidden';
+  WebBrowserQrCode.OleObject.document.body.style.overflowY := 'hidden';
+end;
+
+procedure TMain.ExibeQrCode(const UrlQrCode : String);
+var PaginaHtml : TStringList;
+    Url : String;
+begin
+   PaginaHtml := TStringList.Create;
+   try
+      WebBrowserQrCode.Navigate('');
+      DeleteFile('c:\BaseQrCode.Html');
+      //PaginaHtml.Add('<!DOCTYPE html>');
+      PaginaHtml.Add('<html">');
+      //PaginaHtml.Add('<head>');
+      //PaginaHtml.Add('<meta charset="UTF-8"/>');
+      //PaginaHtml.Add('<title>Document</title>');
+      //PaginaHtml.Add('</head>');
+      //PaginaHtml.Add('<body width="241px" height="241px" >');
+      PaginaHtml.Add('<body>');
+      //PaginaHtml.Add('<!-- Conteúdo -->');
+      if trim(UrlQrCode) <> '' then
+      begin
+         PaginaHtml.Add('<img width="230px" height="230px" src="EnderecoPagina">');
+      end;
+      PaginaHtml.Add('</img>');
+      PaginaHtml.Add('</body>');
+      PaginaHtml.Add('</html>');
+      //
+      PaginaHtml.Text := StringReplace(PaginaHtml.Text,'EnderecoPagina',UrlQrCode,[rfReplaceAll]);
+      PaginaHtml.SaveToFile('c:\BaseQrCode.Html');
+      Sleep(200);
+      //
+      Url := 'c:\BaseQrCode.Html';
+      WebBrowserQrCode.Visible := True;
+      WebBrowserQrCode.Navigate(Url);
+      PnlQrCode.Visible := True;
+   finally
+      PaginaHtml.Clear;
+      PaginaHtml.Free;
+   end;
+end;
+
 
 end.
