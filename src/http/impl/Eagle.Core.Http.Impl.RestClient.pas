@@ -27,6 +27,7 @@ type
 
     procedure ConfigurarHeaders(const Headers: IDictionary<string, string>);
 
+    function GetImg(const Recurso: string): TMemoryStream;
     function Get(const Recurso: string): IHttpResponse;
     function Post(const Recurso: string; const Data: string = ''): IHttpResponse;
     function Delete(const Recurso: string): IHttpResponse;
@@ -75,6 +76,27 @@ destructor TRestClient.Destroy;
 begin
   FHttpClient.Free;
   inherited;
+end;
+
+function TRestClient.GetImg(const Recurso: string): TMemoryStream;
+var
+  Response: TMemoryStream;
+  URL, ErrorMensage: string;
+begin
+  URL := FBaseURL + Recurso;
+
+  Response := TMemoryStream.Create;
+
+  try
+    FHttpClient.Get(URL, Response);
+  except
+    on E: EIdHTTPProtocolException do
+      ErrorMensage := E.ErrorMessage;
+    on E: Exception do
+      raise Exception.Create(E.Message);
+  end;
+
+  Result := Response;
 end;
 
 function TRestClient.Get(const Recurso: string): IHttpResponse;

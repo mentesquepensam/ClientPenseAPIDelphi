@@ -15,6 +15,7 @@ type
 
     procedure ConfigurarHeaders(const Headers: IDictionary<string, string>);
 
+    function GetImg(const Recurso: string): TMemoryStream;
     function Get(const Recurso: string): IHttpResponse;
     function Post(const Recurso: string; const Data: string = ''): IHttpResponse;
     function Delete(const Recurso: string): IHttpResponse;

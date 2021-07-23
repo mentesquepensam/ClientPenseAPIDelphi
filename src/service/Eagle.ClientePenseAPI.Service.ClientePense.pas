@@ -5,13 +5,18 @@ interface
 uses
   System.SysUtils,
 
+  System.Classes,
+
   Eagle.ClientePenseAPI.Model.Requisicao.DadosAutenticacao,
   Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento,
   Eagle.ClientePenseAPI.Model.Requisicao.DadosLoja,
   Eagle.ClientePenseAPI.Model.Requisicao.DadosTerminal,
+  Eagle.ClientePenseAPI.Model.Requisicao.BankDadosPix,
 
   Eagle.ClientePenseAPI.Model.Resposta.DadosAutenticacao,
-  Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento;
+  Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento,
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosPix,
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosConsultaPix;
 
 type
   EClientePenseException = class(Exception);
@@ -27,9 +32,15 @@ type
     function EnviarLoja(const Loja: TDadosRequisicaoLoja): string;
     function EnviarTerminal(const Terminal: TDadosRequisicaoTerminal): string;
 
+    function BankEnviarPix(const Pix: TDadosBankRequisicaoPix): TDadosBankRespostaPix;
+    function BankEnviarPixAgendado(const Pix: TDadosBankRequisicaoPixAgendado): TDadosBankRespostaPix;
+
     function ListarCarteiras: string;
     function ConsultarPagamentoPeloCodigoAPI(const CodigoAPI: Integer): TDadosRespostaPagamento;
     function ConsultarPagamentoPelaCodigoERP(const CodigoERP: string): TDadosRespostaPagamento;
+
+    function BanckConsultarPixPeloHash(const CodigoHash: string): TDadosBankRespostaConsultaPix;
+    function BanckConsultarQrcodePeloHash(const CodigoHash: string): TMemoryStream;
 
     procedure DeletarPagamento(const CodigoPagamentoAPI: Integer);
 

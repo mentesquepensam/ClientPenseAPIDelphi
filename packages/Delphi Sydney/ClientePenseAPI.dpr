@@ -4,12 +4,8 @@ uses
   Vcl.Forms,
   Spring.Container,
   CodeSiteLogging,
-  //
-  //Eagle.Core.View.Impl.Notification,
-  //
   XSuperJSON in '..\..\dependencias\x-superobject\XSuperJSON.pas',
   XSuperObject in '..\..\dependencias\x-superobject\XSuperObject.pas',
-
   Mqp.View.Impl.Notification in '..\..\src\view\impl\Mqp.View.Impl.Notification.pas',
   Mqp.View.Notification in '..\..\src\view\Mqp.View.Notification.pas',
   Eagle.ClientePenseAPI.Main in '..\..\src\main\Eagle.ClientePenseAPI.Main.pas' {Main},
@@ -22,13 +18,18 @@ uses
   Eagle.ClientePenseAPI.Model.EnderecoLoja in '..\..\src\model\Eagle.ClientePenseAPI.Model.EnderecoLoja.pas',
   Eagle.ClientePenseAPI.Model.Requisicao.DadosTerminal in '..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.DadosTerminal.pas',
   Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento in '..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento.pas',
+  Eagle.ClientePenseAPI.Model.Requisicao.BankDadosPix in '..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.BankDadosPix.pas',
   Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento.pas',
   Eagle.ClientePenseAPI.Model.Resposta.DadosErro in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosErro.pas',
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosPix in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosPix.pas',
   Eagle.ClientePenseAPI.Util.GeradorLog in '..\..\src\utils\Eagle.ClientePenseAPI.Util.GeradorLog.pas',
   Eagle.Core.Http.HttpResponse in '..\..\src\http\Eagle.Core.Http.HttpResponse.pas',
   Eagle.Core.Http.RestClient in '..\..\src\http\Eagle.Core.Http.RestClient.pas',
   Eagle.Core.Http.Impl.HttpResponse in '..\..\src\http\impl\Eagle.Core.Http.Impl.HttpResponse.pas',
-  Eagle.Core.Http.Impl.RestClient in '..\..\src\http\impl\Eagle.Core.Http.Impl.RestClient.pas';
+  Eagle.Core.Http.Impl.RestClient in '..\..\src\http\impl\Eagle.Core.Http.Impl.RestClient.pas',
+  Eagle.ClientePenseAPI.Util.Tipos in '..\..\src\utils\Eagle.ClientePenseAPI.Util.Tipos.pas',
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosErro in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosErro.pas',
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosConsultaPix in '..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosConsultaPix.pas';
 
 {$R *.res}
 

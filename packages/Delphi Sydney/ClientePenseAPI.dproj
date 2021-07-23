@@ -114,13 +114,18 @@
         <DCCReference Include="..\..\src\model\Eagle.ClientePenseAPI.Model.EnderecoLoja.pas"/>
         <DCCReference Include="..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.DadosTerminal.pas"/>
         <DCCReference Include="..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento.pas"/>
+        <DCCReference Include="..\..\src\model\requisicao\Eagle.ClientePenseAPI.Model.Requisicao.BankDadosPix.pas"/>
         <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento.pas"/>
         <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.DadosErro.pas"/>
+        <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosPix.pas"/>
         <DCCReference Include="..\..\src\utils\Eagle.ClientePenseAPI.Util.GeradorLog.pas"/>
         <DCCReference Include="..\..\src\http\Eagle.Core.Http.HttpResponse.pas"/>
         <DCCReference Include="..\..\src\http\Eagle.Core.Http.RestClient.pas"/>
         <DCCReference Include="..\..\src\http\impl\Eagle.Core.Http.Impl.HttpResponse.pas"/>
         <DCCReference Include="..\..\src\http\impl\Eagle.Core.Http.Impl.RestClient.pas"/>
+        <DCCReference Include="..\..\src\utils\Eagle.ClientePenseAPI.Util.Tipos.pas"/>
+        <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosErro.pas"/>
+        <DCCReference Include="..\..\src\model\resposta\Eagle.ClientePenseAPI.Model.Resposta.BankDadosConsultaPix.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

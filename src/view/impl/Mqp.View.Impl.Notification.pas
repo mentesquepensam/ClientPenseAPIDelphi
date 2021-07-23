@@ -81,9 +81,19 @@ begin
    EditBalloonTip.pszTitle := 'Alerta';
    EditBalloonTip.ttiIcon := TTI_INFO;
    EditBalloonTip.ttiIcon := 2;
-   SendMessageW(TEdit(Controle).Handle, EM_SHOWBALLOONTIP, 0,Integer(@EditBalloonTip));
-   Sleep(1000);
-   SendMessageW(TEdit(Controle).Handle, EM_HIDEBALLOONTIP, 0, 0);
+   if Controle is TEdit then
+   begin
+      SendMessageW(TEdit(Controle).Handle, EM_SHOWBALLOONTIP, 0,Integer(@EditBalloonTip));
+      Sleep(1000);
+      SendMessageW(TEdit(Controle).Handle, EM_HIDEBALLOONTIP, 0, 0);
+   end;
+   if Controle is TMemo then
+   begin
+      SendMessageW(TMemo(Controle).Handle, EM_SHOWBALLOONTIP, 0,Integer(@EditBalloonTip));
+      Sleep(1000);
+      SendMessageW(TMemo(Controle).Handle, EM_HIDEBALLOONTIP, 0, 0);
+   end;
+
 end;
 
 
@@ -111,7 +121,15 @@ begin
    Result := False;
    for i:= 0 to FListaNotificacoes.Count - 1 do
    begin
-      BalloonWarning(TEdit(FListaNotificacoes.Objects[i]),FListaNotificacoes.Strings[i]);
+      if FListaNotificacoes.Objects[i] is TEdit then
+      begin
+         BalloonWarning(TEdit(FListaNotificacoes.Objects[i]),FListaNotificacoes.Strings[i]);
+      end;
+      if FListaNotificacoes.Objects[i] is TMemo then
+      begin
+         BalloonWarning(TMemo(FListaNotificacoes.Objects[i]),FListaNotificacoes.Strings[i]);
+      end;
+
       Result := True;
    end;
    if Result then

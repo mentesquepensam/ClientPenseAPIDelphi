@@ -22,15 +22,20 @@ uses
   Eagle.ClientePenseAPI.Model.Requisicao.DadosPagamento,
   Eagle.ClientePenseAPI.Model.Requisicao.DadosLoja,
   Eagle.ClientePenseAPI.Model.Requisicao.DadosTerminal,
+  Eagle.ClientePenseAPI.Model.Requisicao.BankDadosPix,
 
-  Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento,
   Eagle.ClientePenseAPI.Model.Resposta.DadosAutenticacao,
+  Eagle.ClientePenseAPI.Model.Resposta.DadosPagamento,
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosPix,
+  Eagle.ClientePenseAPI.Model.Resposta.BankDadosConsultaPix,
 
-  Eagle.ClientePenseAPI.Service.ClientePense, Vcl.Samples.Spin;
+  Eagle.ClientePenseAPI.Service.ClientePense, Vcl.Samples.Spin,
+
+  Eagle.ClientePenseAPI.Util.Tipos;
 
 type
   TMain = class(TForm)
-    PageControl1: TPageControl;
+    PgcPenseAPI: TPageControl;
 
     TSConfiguracoes: TTabSheet;
     TSCadastros: TTabSheet;
@@ -138,6 +143,71 @@ type
     PnlQrCode: TPanel;
     BtExibeQrCode: TBitBtn;
     BtLimpaQrcodeTela: TBitBtn;
+    PgcPrincipal: TPageControl;
+    TSPenseApi: TTabSheet;
+    TSPenseBank: TTabSheet;
+    PgcPenseBank: TPageControl;
+    TSBancConfiguracoes: TTabSheet;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    MEBankBaseURLConfiguracao: TEdit;
+    TSBancPix: TTabSheet;
+    GroupBox4: TGroupBox;
+    Label21: TLabel;
+    BtBankEnviarPix: TButton;
+    TSBancConsultaPix: TTabSheet;
+    Label4: TLabel;
+    MEBankAliasConfiguracao: TEdit;
+    MEBankBearerConfiguracao: TMemo;
+    BtBankEnviarPixAgendado: TButton;
+    Label3: TLabel;
+    MeBankDataAgendamento: TEdit;
+    MEBankValorPix: TEdit;
+    GroupBox6: TGroupBox;
+    Label27: TLabel;
+    MEBankHashAPIRespostaPix: TEdit;
+    PageControl1: TPageControl;
+    TsStatus: TTabSheet;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    LbBankUltimaAtualizacao: TLabel;
+    Label32: TLabel;
+    MEBankStatusPagamentoRespostaPix: TEdit;
+    BTBankAtualizarStatusRespostaPix: TBitBtn;
+    MEBanckCodigoPagamentoERPRespostaPix: TEdit;
+    MEBankQrCodeURLRespostaPix: TEdit;
+    MeStatusRespostaPix: TMemo;
+    TsQrCode: TTabSheet;
+    ImgQrCode: TImage;
+    BTBanckAbrirQRCodeRespostaPixNavegador: TBitBtn;
+    Label5: TLabel;
+    MeBankPercentualJuros: TEdit;
+    Label6: TLabel;
+    MeBankPercentualMulta: TEdit;
+    Label7: TLabel;
+    MeBankPercentualDesconto: TEdit;
+    MeBankValidadeDesconto: TEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label15: TLabel;
+    MEBankNome: TEdit;
+    MeBankLogradouro: TEdit;
+    MeBankCpfCnpj: TEdit;
+    MeBankUf: TEdit;
+    MeBankCidade: TEdit;
+    MeBankCep: TEdit;
+    Label10: TLabel;
+    Label14: TLabel;
+    MeBankUrlRetorno: TEdit;
+    Label16: TLabel;
+    MENomeFantasia: TEdit;
+    Label17: TLabel;
+    MECNPJ: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure BTAutenticarClienteConfiguracaoClick(Sender: TObject);
     procedure BTEnviarLojaClick(Sender: TObject);
@@ -156,23 +226,33 @@ type
       const pDisp: IDispatch; const URL: OleVariant);
     procedure BtExibeQrCodeClick(Sender: TObject);
     procedure BtLimpaQrcodeTelaClick(Sender: TObject);
+    procedure PgcPenseBankChanging(Sender: TObject; var AllowChange: Boolean);
+    procedure BtBankEnviarPixClick(Sender: TObject);
+    procedure BTBankAtualizarStatusRespostaPixClick(Sender: TObject);
+    procedure BTBanckAbrirQRCodeRespostaPixNavegadorClick(Sender: TObject);
+    procedure BtBankEnviarPixAgendadoClick(Sender: TObject);
 
   private
     FClientePense: IClientePense;
     FNotification: INotification;
     FItensPagamento: IList<TItemPagamento>;
 
-    procedure InicializarClientePense;
+    procedure InicializarClientePense(const BaseUrl : String; const NomeApi : String = PENSE_API; const BearerToken : String = '');
     procedure Autenticar;
     procedure EnviarLoja;
     procedure EnviarPagamento;
     procedure EnviarTerminal;
     procedure ListarEPreencherComboCarteiras;
+    procedure EnviarPixBank;
+    procedure EnviarPixAgendadoBank;
 
     procedure TratarRetornoAutenticacao(const RespostaAutenticacao: TDadosRespostaAutenticacao);
     procedure AtualizarDadosRetornoPagamento(const RespostaPagamento: TDadosRespostaPagamento);
+    procedure AtualizarDadosRetornoPixBank(const RespostaPagamento: TDadosBankRespostaPix);
     procedure AtualizarDadosConsultaPagamento(const RespostaPagamento: TDadosRespostaPagamento);
+    procedure AtualizarDadosConsultaPixBank(const RespostaPagamento: TDadosBankRespostaConsultaPix);
     procedure AtivarDesativarOpcoesAPI(const Value: Boolean);
+    procedure AtivarDesativarOpcoesBank(const Value: Boolean);
 
     procedure AdicionarItensPagamento;
     procedure LimparItensPagamento;
@@ -189,6 +269,11 @@ type
     procedure ValidarTerminal;
 
     procedure ExibeQrCode(const UrlQrCode : String);
+
+    function ValidarConfiguracaoBank : boolean;
+    procedure ValidarDadosPixBank;
+    procedure ValidarDadosPixAgendadoBank;
+
   public
     { Public declarations }
   end;
@@ -206,14 +291,57 @@ implementation
 
 procedure TMain.FormCreate(Sender: TObject);
 begin
+
   FNotification := GlobalContainer.Resolve<INotification>;
+
+  MEBankBearerConfiguracao.Text := EmptyStr;
+  MeStatusRespostaPix.Text := EmptyStr;
+
+  PgcPrincipal.ActivePage := TSPenseApi;
+  PgcPenseAPI.ActivePage  := TSConfiguracoes;
+  PgcPenseBank.ActivePage := TSBancConfiguracoes;
+
+
+  MEBankAliasConfiguracao.Text  := '2021/000';
+  MEBankValorPix.Text := '10,00';
+  MEBankBearerConfiguracao.Text :=
+     'eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2MjY5NzI3NzIsImlzcyI6IntcImlk'+
+     'Y29ycmVudGlzdGFcIjo4NDAsXCJ1c3VhcmlvXCI6XCI0NC45NDQuNjc2LzAwM'+
+     'DEtMDlcIn0iLCJleHAiOjkwOTE5MzI3NzJ9.Eh9pM3AyGh99QuGihHMKokvJP'+
+     '6po2xNYsSfQrYJj8eQPbxqrURHtHsGwOXL3ZgB0IdjtVh7Xn0zi-DpJ4-syHA';
 end;
 
 procedure TMain.BTAutenticarClienteConfiguracaoClick(Sender: TObject);
 begin
   Self.ValidarConfiguracao;
-  Self.InicializarClientePense;
+  Self.InicializarClientePense(MEBaseURLConfiguracao.Text);
   Self.Autenticar;
+end;
+
+procedure TMain.BtBankEnviarPixClick(Sender: TObject);
+begin
+  Self.ValidarDadosPixBank;
+  if not Assigned(FClientePense) then
+  begin
+     Self.InicializarClientePense(MEBankBaseURLConfiguracao.Text,
+                                  PENSE_BANK_API,
+                                  MEBankBearerConfiguracao.Text);
+  end;
+  Self.EnviarPixBank;
+  PgcPenseBank.ActivePage := TSBancConsultaPix;
+end;
+
+procedure TMain.BtBankEnviarPixAgendadoClick(Sender: TObject);
+begin
+  Self.ValidarDadosPixAgendadoBank;
+  if not Assigned(FClientePense) then
+  begin
+     Self.InicializarClientePense(MEBankBaseURLConfiguracao.Text,
+                                  PENSE_BANK_API,
+                                  MEBankBearerConfiguracao.Text);
+  end;
+  Self.EnviarPixAgendadoBank;
+  PgcPenseBank.ActivePage := TSBancConsultaPix;
 end;
 
 procedure TMain.BTEnviarLojaClick(Sender: TObject);
@@ -270,6 +398,55 @@ begin
   Self.AbrirQrCodeNavegador(MEQrCodeURLRespostaPagamento);
 end;
 
+procedure TMain.BTBanckAbrirQRCodeRespostaPixNavegadorClick(Sender: TObject);
+var
+  QrCode: TMemoryStream;
+begin
+  if string(MEBankHashAPIRespostaPix.Text).IsEmpty then
+  begin
+    FNotification.BalloonWarning(MEBankHashAPIRespostaPix, MSG_CAMPO_OBRIGATORIO);
+    Abort;
+  end;
+
+  if not Assigned(FClientePense) then
+  begin
+     Self.InicializarClientePense(MEBankBaseURLConfiguracao.Text,
+                                  PENSE_BANK_API,
+                                  MEBankBearerConfiguracao.Text);
+  end;
+  try
+    QrCode := FClientePense.BanckConsultarQrcodePeloHash(MEBankHashAPIRespostaPix.Text);
+
+    QrCode.Position := 0;
+
+    ImgQrCode.Picture.LoadFromStream(QrCode);
+  finally
+     QrCode.Free;
+  end;
+end;
+
+procedure TMain.BTBankAtualizarStatusRespostaPixClick(Sender: TObject);
+var
+  DadosBankRespostaConsultaPix: TDadosBankRespostaConsultaPix;
+begin
+  if string(MEBankHashAPIRespostaPix.Text).IsEmpty then
+  begin
+    FNotification.BalloonWarning(MEBankHashAPIRespostaPix, MSG_CAMPO_OBRIGATORIO);
+    Abort;
+  end;
+
+  if not Assigned(FClientePense) then
+  begin
+     Self.InicializarClientePense(MEBankBaseURLConfiguracao.Text,
+                                  PENSE_BANK_API,
+                                  MEBankBearerConfiguracao.Text);
+  end;
+
+  DadosBankRespostaConsultaPix := FClientePense.BanckConsultarPixPeloHash(MEBankHashAPIRespostaPix.Text);
+
+  Self.AtualizarDadosConsultaPixBank(DadosBankRespostaConsultaPix);
+end;
+
 procedure TMain.BTAbrirQRCodeConsultaPagamentosNavegadorClick(Sender: TObject);
 begin
   Self.AbrirQrCodeNavegador(MEQRCodeConsultaPagamentos);
@@ -314,8 +491,7 @@ end;
 procedure TMain.BTAtualizarStatusRespostaPagamentoClick(Sender: TObject);
 var
   DadosRetornoPagamento: TDadosRespostaPagamento;
-begin
-  if string(MECodigoPagamentoAPIRespostaPagamento.Text).IsEmpty then
+begin  if string(MECodigoPagamentoAPIRespostaPagamento.Text).IsEmpty then
   begin
     FNotification.BalloonWarning(MECodigoPagamentoAPIRespostaPagamento, MSG_CAMPO_OBRIGATORIO);
     Abort;
@@ -325,9 +501,9 @@ begin
   Self.AtualizarDadosRetornoPagamento(DadosRetornoPagamento);
 end;
 
-procedure TMain.InicializarClientePense;
+procedure TMain.InicializarClientePense(const BaseUrl : String; const NomeApi : String = PENSE_API; const BearerToken : String = '');
 begin
-  FClientePense := GlobalContainer.Resolve<IClientePense>([MEBaseURLConfiguracao.Text]);
+  FClientePense := GlobalContainer.Resolve<IClientePense>([BaseUrl,NomeApi,BearerToken]);
 end;
 
 procedure TMain.Autenticar;
@@ -372,6 +548,12 @@ begin
   TSConsultaPagamentos.Enabled := Value;
 end;
 
+procedure TMain.AtivarDesativarOpcoesBank(const Value: Boolean);
+begin
+  TSBancPix.Enabled := Value;
+  TSBancConsultaPix.Enabled := Value;
+end;
+
 procedure TMain.EnviarLoja;
 var
   Loja: TDadosRequisicaoLoja;
@@ -383,6 +565,9 @@ begin
   try
     Loja.Nome := MENomeLoja.Text;
     Loja.CodigoLoja := MEIdentificadorLoja.Text;
+
+    Loja.NomeComercial := MENomeFantasia.Text;
+    Loja.Documento := MECNPJ.Text;
 
     Loja.Endereco.Numero := MENumeroLoja.Text;
     Loja.Endereco.Logradouro := MELogradouroLoja.Text;
@@ -442,6 +627,15 @@ begin
     CBCarteiraDigitalPagamento.AddItem(Carteira, TObject(IndexStr(Carteira, CarteirasArray)));
 end;
 
+procedure TMain.PgcPenseBankChanging(Sender: TObject; var AllowChange: Boolean);
+begin
+   if PgcPenseBank.ActivePage = TSBancConfiguracoes then
+   begin
+      AllowChange := Self.ValidarConfiguracaoBank;
+      Self.AtivarDesativarOpcoesBank(AllowChange);
+   end;
+end;
+
 procedure TMain.AdicionarItensPagamento;
 var
   ItemPagamento: TItemPagamento;
@@ -478,6 +672,109 @@ begin
     LBUltimaAtualizacaoDataConsultaPagamentos.Caption := RespostaPagamento.UltimaAtualizacao.Replace('T', ' ').Split(['.'])[0];
 end;
 
+procedure TMain.AtualizarDadosConsultaPixBank(const RespostaPagamento: TDadosBankRespostaConsultaPix);
+begin
+  if not Assigned(RespostaPagamento) then
+    Exit;
+
+  if RespostaPagamento.Sucesso then
+  begin
+     LbBankUltimaAtualizacao.Caption := 'Sucesso';
+     MEBankHashAPIRespostaPix.Text := RespostaPagamento.DadosBankMenssagem.Hash;
+     MEBankQrCodeURLRespostaPix.Text := RespostaPagamento.DadosBankMenssagem.Qrcode;
+     MEBanckCodigoPagamentoERPRespostaPix.Text := RespostaPagamento.DadosBankMenssagem.Alias;
+
+     MeStatusRespostaPix.Clear;
+
+     MeStatusRespostaPix.Lines.Add('idpagamento: ' +
+        IntToStr(RespostaPagamento.DadosBankMenssagem.Idpagamento));
+
+     MeStatusRespostaPix.Lines.Add('idcorrentista: ' +
+        IntToStr(RespostaPagamento.DadosBankMenssagem.iIdcorrentista));
+
+     MeStatusRespostaPix.Lines.Add('alias: ' +
+        RespostaPagamento.DadosBankMenssagem.Alias);
+
+     MeStatusRespostaPix.Lines.Add('cpfCpnj: ' +
+        RespostaPagamento.DadosBankMenssagem.CpfCpnj);
+
+     MeStatusRespostaPix.Lines.Add('nome: ' +
+        RespostaPagamento.DadosBankMenssagem.Nome);
+
+     MeStatusRespostaPix.Lines.Add('endereco: ' +
+        RespostaPagamento.DadosBankMenssagem.Endereco);
+
+     MeStatusRespostaPix.Lines.Add('cidade: ' +
+        RespostaPagamento.DadosBankMenssagem.Cidade);
+
+     MeStatusRespostaPix.Lines.Add('uf: ' +
+        RespostaPagamento.DadosBankMenssagem.UF);
+
+     MeStatusRespostaPix.Lines.Add('cep: ' +
+        RespostaPagamento.DadosBankMenssagem.Cep);
+
+     MeStatusRespostaPix.Lines.Add('email: ' +
+        RespostaPagamento.DadosBankMenssagem.Email);
+
+     MeStatusRespostaPix.Lines.Add('valor: ' +
+        FloatToStr(RespostaPagamento.DadosBankMenssagem.Valor));
+
+     MeStatusRespostaPix.Lines.Add('vencimento: ' +
+        RespostaPagamento.DadosBankMenssagem.Vencimento);
+
+     MeStatusRespostaPix.Lines.Add('multaPerc: ' +
+        FloatToStr(RespostaPagamento.DadosBankMenssagem.MultaPerc));
+
+     MeStatusRespostaPix.Lines.Add('jurosPerc: ' +
+        FloatToStr(RespostaPagamento.DadosBankMenssagem.JurosPerc));
+
+     MeStatusRespostaPix.Lines.Add('descontoPerc: ' +
+        FloatToStr(RespostaPagamento.DadosBankMenssagem.DescontoPerc));
+
+     MeStatusRespostaPix.Lines.Add('descontoData: ' +
+        RespostaPagamento.DadosBankMenssagem.DescontoData);
+
+     MeStatusRespostaPix.Lines.Add('callbackAddress: ' +
+        RespostaPagamento.DadosBankMenssagem.CallBackAddress);
+
+     MeStatusRespostaPix.Lines.Add('qrcode: ' +
+        RespostaPagamento.DadosBankMenssagem.Qrcode);
+
+     MeStatusRespostaPix.Lines.Add('dataPagamento: ' +
+        RespostaPagamento.DadosBankMenssagem.DataPagamento);
+
+     MeStatusRespostaPix.Lines.Add('valorPago: ' +
+        FloatToStr(RespostaPagamento.DadosBankMenssagem.ValorPago));
+
+     MeStatusRespostaPix.Lines.Add('tipo: ' +
+        RespostaPagamento.DadosBankMenssagem.Tipo);
+
+     MeStatusRespostaPix.Lines.Add('hash: ' +
+        RespostaPagamento.DadosBankMenssagem.Hash);
+
+     MeStatusRespostaPix.Lines.Add('materaTransactionId: ' +
+        RespostaPagamento.DadosBankMenssagem.MateraTransactionId);
+
+     MeStatusRespostaPix.Lines.Add('materaReference: ' +
+        RespostaPagamento.DadosBankMenssagem.MateraReference);
+
+     if RespostaPagamento.DadosBankMenssagem.Pago then
+     begin
+        MeStatusRespostaPix.Lines.Add('pago: SIM');
+        MEBankStatusPagamentoRespostaPix.Text := 'Pago';
+     end
+     else
+     begin
+        MeStatusRespostaPix.Lines.Add('pago: NÂO');
+        MEBankStatusPagamentoRespostaPix.Text := 'Pendente';
+     end;
+  end
+  else
+  begin
+     LbBankUltimaAtualizacao.Caption := 'Sem Sucesso';
+  end;
+end;
+
 procedure TMain.AtualizarValorTotalItensPagamento;
 var
   ValorTotalItens: Double;
@@ -512,13 +809,96 @@ begin
     DadosRequisicaoPagamento.CodigoLoja := MECodigoLojaPagamento.Text;
     DadosRequisicaoPagamento.CodigoTerminal := MECodigoTerminalPagamento.Text;
     DadosRequisicaoPagamento.CarteiraDigital := CBCarteiraDigitalPagamento.Items[CBCarteiraDigitalPagamento.ItemIndex];
+    try
+       DadosRetornoPagamento := FClientePense.EnviarPagamento(DadosRequisicaoPagamento);
 
-    DadosRetornoPagamento := FClientePense.EnviarPagamento(DadosRequisicaoPagamento);
-
-    Self.AtualizarDadosRetornoPagamento(DadosRetornoPagamento);
-    FNotification.MessageInformation('Solicitação de pagamento realizada com sucesso, um QRCode para realizar o pagamento será aberto no navegador!');
+       Self.AtualizarDadosRetornoPagamento(DadosRetornoPagamento);
+       FNotification.MessageInformation('Solicitação de pagamento realizada com sucesso, um QRCode para realizar o pagamento será aberto no navegador!');
+    finally
+       DadosRetornoPagamento.Free;
+    end;
   finally
     DadosRequisicaoPagamento.Free;
+  end;
+end;
+
+procedure TMain.EnviarPixBank;
+var
+  DadosBankRequisicaoPix: TDadosBankRequisicaoPix;
+  DadosBankRespostaPix: TDadosBankRespostaPix;
+  Valor : String;
+begin
+  DadosBankRequisicaoPix := TDadosBankRequisicaoPix.Create;
+
+  try
+    DadosBankRequisicaoPix.CodigoERP := MEBankAliasConfiguracao.Text;
+
+    Valor := StringReplace(MEBankValorPix.Text, ',', '.', [rfReplaceAll]);
+
+    DadosBankRequisicaoPix.Valor := Valor;
+
+    DadosBankRequisicaoPix.UrlRetorno := MeBankUrlRetorno.Text;
+      //'https://crudcrud.com/api/9e80ceb265a34890873aad70616b5c98/teste';
+    try
+       DadosBankRespostaPix := FClientePense.BankEnviarPix(DadosBankRequisicaoPix);
+
+       Self.AtualizarDadosRetornoPixBank(DadosBankRespostaPix);
+       FNotification.MessageInformation('Solicitação de pagamento realizada com sucesso, um QRCode para realizar o pagamento será aberto no navegador!');
+    finally
+       DadosBankRespostaPix.Free;
+    end;
+  finally
+    DadosBankRequisicaoPix.Free;
+  end;
+end;
+
+
+
+procedure TMain.EnviarPixAgendadoBank;
+var
+  DadosBankRequisicaoPixAgendado: TDadosBankRequisicaoPixAgendado;
+  DadosBankRespostaPix: TDadosBankRespostaPix;
+  Valor : String;
+begin
+  DadosBankRequisicaoPixAgendado := TDadosBankRequisicaoPixAgendado.Create;
+
+  try
+    DadosBankRequisicaoPixAgendado.CodigoERP := MEBankAliasConfiguracao.Text;
+
+    Valor := StringReplace(MEBankValorPix.Text, ',', '.', [rfReplaceAll]);
+
+    DadosBankRequisicaoPixAgendado.Valor := Valor;
+
+    DadosBankRequisicaoPixAgendado.DataAgendamento := MeBankDataAgendamento.Text;
+
+    Valor := StringReplace(MeBankPercentualJuros.Text, ',', '.', [rfReplaceAll]);
+    DadosBankRequisicaoPixAgendado.PercentualJuros := Valor;
+    Valor := StringReplace(MeBankPercentualMulta.Text, ',', '.', [rfReplaceAll]);
+    DadosBankRequisicaoPixAgendado.PercentualMulta := Valor;
+    Valor := StringReplace(MeBankPercentualDesconto.Text, ',', '.', [rfReplaceAll]);
+
+    DadosBankRequisicaoPixAgendado.DadosBankDesconto.DataLimite := MeBankValidadeDesconto.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankDesconto.Percentual := Valor;
+
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.Nome := MEBankNome.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.CpfCpnj :=MeBankCpfCnpj.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.DadosBankEndereco.Logradouro := MeBankLogradouro.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.DadosBankEndereco.Cidade := MeBankCidade.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.DadosBankEndereco.Cep := MeBankCep.Text;
+    DadosBankRequisicaoPixAgendado.DadosBankPagador.DadosBankEndereco.Uf := MeBankUf.Text;
+
+    DadosBankRequisicaoPixAgendado.UrlRetorno := MeBankUrlRetorno.Text;
+      //'https://crudcrud.com/api/9e80ceb265a34890873aad70616b5c98/teste';
+    try
+       DadosBankRespostaPix := FClientePense.BankEnviarPixAgendado(DadosBankRequisicaoPixAgendado);
+
+       Self.AtualizarDadosRetornoPixBank(DadosBankRespostaPix);
+       FNotification.MessageInformation('Solicitação de pagamento realizada com sucesso, um QRCode para realizar o pagamento será aberto no navegador!');
+    finally
+       DadosBankRespostaPix.Free;
+    end;
+  finally
+    DadosBankRequisicaoPixAgendado.Free;
   end;
 end;
 
@@ -535,6 +915,25 @@ begin
   if RespostaPagamento.UltimaAtualizacao.Contains('.') then
     LBUltimaAtualizacaoPagamentoRespostaData.Caption := RespostaPagamento.UltimaAtualizacao.Replace('T', ' ').Split(['.'])[0];
 end;
+
+
+procedure TMain.AtualizarDadosRetornoPixBank(const RespostaPagamento: TDadosBankRespostaPix);
+begin
+  if not Assigned(RespostaPagamento) then
+    Exit;
+
+  if RespostaPagamento.Sucesso then
+  begin
+     LbBankUltimaAtualizacao.Caption := 'Sucesso';
+     MEBankHashAPIRespostaPix.Text := RespostaPagamento.DadosBankMenssagem.Hash;
+     MEBankQrCodeURLRespostaPix.Text := RespostaPagamento.DadosBankMenssagem.Qrcode;
+  end
+  else
+  begin
+     LbBankUltimaAtualizacao.Caption := 'Sem Sucesso';
+  end;
+end;
+
 
 procedure TMain.DeletarPagamento;
 begin
@@ -590,6 +989,22 @@ begin
     Abort;
 end;
 
+function TMain.ValidarConfiguracaoBank : Boolean;
+begin
+  result := False;
+
+  if string(MEBankBaseURLConfiguracao.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankBaseURLConfiguracao);
+
+  if string(MEBankBearerConfiguracao.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankBearerConfiguracao);
+
+  if FNotification.WhenHasNotificationShowAndClear then
+    exit;
+
+  Result := True;
+end;
+
 procedure TMain.ValidarDadosPagamento;
 begin
   if string(MEDescricaoPagamento.Text).IsEmpty then
@@ -621,6 +1036,70 @@ begin
   if FNotification.WhenHasNotificationShowAndClear then
     Abort;
 end;
+
+procedure TMain.ValidarDadosPixBank;
+begin
+  if string(MEBankAliasConfiguracao.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankAliasConfiguracao);
+
+  if not(string(MEBankValorPix.Text).IsEmpty) then
+    if string(MEBankValorPix.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankValorPix);
+
+  if FNotification.WhenHasNotificationShowAndClear then
+    Abort;
+end;
+
+procedure TMain.ValidarDadosPixAgendadoBank;
+begin
+  if string(MEBankAliasConfiguracao.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankAliasConfiguracao);
+
+  if not(string(MEBankValorPix.Text).IsEmpty) then
+    if string(MEBankValorPix.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankValorPix);
+
+  if string(MeBankDataAgendamento.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankDataAgendamento);
+
+  if not(string(MeBankPercentualJuros.Text).IsEmpty) then
+    if string(MeBankPercentualJuros.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankPercentualJuros);
+
+  if not(string(MeBankPercentualMulta.Text).IsEmpty) then
+    if string(MeBankPercentualMulta.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankPercentualMulta);
+
+  if not(string(MeBankPercentualDesconto.Text).IsEmpty) then
+    if string(MeBankPercentualDesconto.Text).ToDouble <= 0 then
+      FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankPercentualDesconto);
+
+  if string(MeBankValidadeDesconto.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankValidadeDesconto);
+
+  if string(MEBankNome.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MEBankNome);
+
+  if string(MeBankCpfCnpj.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankCpfCnpj);
+
+  if string(MeBankLogradouro.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankLogradouro);
+
+  if string(MeBankCidade.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankCidade);
+
+  if string(MeBankCep.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankCep);
+
+  if string(MeBankUf.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MeBankUf);
+
+  if FNotification.WhenHasNotificationShowAndClear then
+    Abort;
+end;
+
+
 
 procedure TMain.ValidarItensPagamento;
 begin
@@ -655,6 +1134,12 @@ begin
 
   if string(MENumeroLoja.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MENumeroLoja);
+
+  if string(MENomeFantasia.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MENomeFantasia);
+
+  if string(MECNPJ.Text).IsEmpty then
+    FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MECNPJ);
 
   if string(MELogradouroLoja.Text).IsEmpty then
     FNotification.AddNotification(MSG_CAMPO_OBRIGATORIO, MELogradouroLoja);
@@ -759,3 +1244,52 @@ end;
 
 
 end.
+
+
+
+
+procedure TMain.Button1Click(Sender: TObject);
+//const
+//  CAMINHOIMAGEM = 'http://www.chart.com.br/imagens/bkgrnd_greydots.jpg';
+//var
+//  LJsonObj,AJsonSubObj : TJSONObject;
+//  AJsonPair, AJsonSubPair: TJSONPair;
+//  AJsonArray: TJSONArray;
+//  J, I, nC: Integer;
+//  StringJSON,imgURL: String;
+//  LItem: TListBoxItem;
+//  TM: TMemoryStream;
+//  HTTP : TIdHttp;
+//  imgItem: TImage;
+//  lTexto: TLabel;
+begin
+//  imgURL := CAMINHOIMAGEM;
+//  nC := Length(Trim(imgURL));
+//  if (nC > 4) then
+//  begin
+//    try
+//      TM := TMemoryStream.Create;
+//      TM.Clear;
+//      try
+//        imgHttp.Get(imgURL,TM);
+//      except
+//        on E: EIdHTTPProtocolException do
+//          if E.Message <> 'HTTP/1.1 404 Not Found' then
+//            ShowMessage(E.Message);
+//      end;
+//      {LItem.ItemData.Bitmap.LoadFromStream(TM);
+//      LItem.ItemData.Bitmap.Resize(120,72);  }
+//      imgItem := TImage.Create(lstPorCidade);
+//      imgItem.Name := 'img'+IntToStr(J)+'n'+IntToStr(I);
+//      imgItem.Parent := LItem;
+//      imgItem.Height := 72;
+//      imgItem.Width  := 120;
+//      imgItem.Position.X := 5;
+//      imgItem.Bitmap.LoadFromStream(TM);
+//      LItem.Height := 75;
+//    finally
+//      TM.Free;
+//    end;
+//  end;
+end;
+
